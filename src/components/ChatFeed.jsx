@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useRef } from "react";
 import MyMessage from "./MyMessage";
 import TheirMessage from "./TheirMessage";
 import MessageForm from "./MessageForm";
@@ -7,13 +7,21 @@ import ReadReceipts from "./ReadReceipts";
 function ChatFeed(props) {
   const { chats, activeChat, userName, messages } = props;
   const chat = chats && chats[activeChat]; //????????????????????????/
-  // console.log("Activechat:", activeChat);
-  console.log("chat:", messages);
+
+  const scrollEnd = useRef(null);
+
+  function scrollToBottom() {
+    scrollEnd.current?.scrollIntoView({ behavior: "smooth" });
+  }
+  useEffect(() => {
+    scrollToBottom();
+  }, [messages]);
+
   const renderMessage = () => {
     const keys = Object.keys(messages); //lay ra id cua cac message
     return keys.map((key, index) => {
       const message = messages[key];
-      // console.log(messages[key]);
+      console.log("2");
       const lastMessageKey = index === 0 ? null : keys[index - 1];
       const myMessage = userName === message.sender.username;
 
@@ -35,7 +43,7 @@ function ChatFeed(props) {
             myMessage={myMessage}
             style={{
               marginRight: myMessage ? "18px" : "0px",
-              marginLeft: myMessage ? "0px" : "68px",
+              marginLeft: myMessage ? "0px" : "68px"
             }}
           ></ReadReceipts>
         </div>
@@ -53,6 +61,7 @@ function ChatFeed(props) {
         {chat.people.map((person) => ` ${person.person.username}`)}
       </div>
       {renderMessage()}
+      <div ref={scrollEnd}></div>
       <div style={{ height: "100px" }}></div>
       <div className="message-form-container">
         <MessageForm {...props} chatId={activeChat} />
